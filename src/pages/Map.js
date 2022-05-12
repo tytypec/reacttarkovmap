@@ -2,6 +2,7 @@ import React, {useEffect, useLayoutEffect, useState } from 'react';
 import Canvas from "../components/Canvas"
 import '../Map.css';
 import "../index.js";
+import axios from 'axios';
 
 
 export default class Map extends React.Component{
@@ -9,23 +10,22 @@ export default class Map extends React.Component{
     locations = [];
 
     imageURLS = ['images/items/GPU4.png', 'images/items/greenBat.png', 'images/items/physicalBitcoin.png', 'images/items/ledx.png', 'images/items/aesa.png', 'images/items/defib.png','images/items/intel.png', 'images/items/mfilter.png', 'images/items/mtube.png', 'images/items/vpx.png'];
-    loadedImagesAvailableForSelection = [];
 
     constructor(props){
         super(props); 
         this.canvasOverlay = React.createRef();
+    }
 
-        this.imageURLS.forEach(src => {
-            const image = new Image();
-            image.src = src;
-            // image.onload = () => {
-            //     this.imageCount += 1;
-            //     if(imageCount === imageURLS.length){
-            //         imagesLoaded();
-            //     }
-            // }
-            this.loadedImagesAvailableForSelection.push(image);
-        });
+    componentDidMount(){
+        axios.get("http://localhost:3000/items/")
+            .then((res)=>{
+                console.log(res);
+                
+            })
+            .catch((error)=>{
+                console.log(error);
+                console.log("uh oh no movies");
+            })  
     }
 
     canvas(){
