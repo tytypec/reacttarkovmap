@@ -169,6 +169,7 @@ export default class Customs extends React.Component{
                         height={831}
                         // onClick={this.mainScript()}
                         onMouseDown={() => {this.mainScript("draw")}}
+                        // onClick={() => {this.drawImage("fart")}} // reference to a function
                         // onMouseDown={handleMouseDown}
                         // onMouseMove={handleMouseMove}
                         // onMouseUp={handleMouseUp}
@@ -360,8 +361,6 @@ export default class Customs extends React.Component{
     //      var location = {
     //          xValue: event.clientX - rectangle.left,
     //          yValue: event.clientY - rectangle.top, 
-    //          color: yellowValue, 
-    //          size: heatSize,
     //          imagePath: imageURL,
     //          lootItemName: unique 
     //      };

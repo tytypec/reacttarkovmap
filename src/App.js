@@ -1,8 +1,10 @@
 import Home from "./pages/Home";
-import Customs from "./pages/Customs";
+import Map from "./pages/Map";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import CustomsImage from "./images/customsMap.png"
+import InterchangeImage from "./images/interchange.png" 
 
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -18,7 +20,8 @@ function App() {
 			<Router>
 				<Routes>
          		 <Route path="/" element={<Home />}/>
-         		 <Route path="/Customs" element={<Customs />}/>
+         		 <Route path="/Customs" element={<Map mapImage={CustomsImage}  />}/>
+				  <Route path="/Interchange" element={<Map mapImage={InterchangeImage}  />}/>
 
 				</Routes>
 			</Router>
