@@ -1,3 +1,6 @@
+.mainContainer{
+    display: flex;
+}
 .mapContainer{
     position: relative;
 }

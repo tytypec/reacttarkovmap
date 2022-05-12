@@ -3,8 +3,8 @@ import React from "react";
 class Header extends React.Component{
     render() {
         return(
-            <div class="topBar">
-                    <a class="active" href="/">Home</a>
+            <div className="topBar">
+                    <a className="active" href="/">Home</a>
                     <a href="/Customs">Customs</a>
                     <a href="/interchange.html">Interchange</a>
                     <a href="/lighthouse.html">Lighthouse</a>
