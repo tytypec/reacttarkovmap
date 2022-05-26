@@ -208,9 +208,8 @@ export default class Customs extends React.Component{
                         </table>
                     </div>
                         <button onClick={() => {this.reset()}}>Reset</button>
-                    </div>
-                <script src="index.js"> </script>                 
-            </div>
+                    </div>                
+                </div>
             // <body>                   
             //                 <div id="sideBar">
             //                     <div id="currentlySelectedSticker">
