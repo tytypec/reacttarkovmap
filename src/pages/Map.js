@@ -16,12 +16,18 @@ export default class Map extends React.Component{
     // locations = JSON.parse(localStorage.getItem('customsTextValues'));
     items = [];
     ready = false;
+    loadedImagesAvailableForSelection = [];
     // imageURLS = ['images/items/GPU4.png', 'images/items/greenBat.png', 'images/items/physicalBitcoin.png', 'images/items/ledx.png', 'images/items/aesa.png', 'images/items/defib.png','images/items/intel.png', 'images/items/mfilter.png', 'images/items/mtube.png', 'images/items/vpx.png'];
+
 
     constructor(props){
         super(props); 
         this.canvasOverlay = React.createRef();
-        this.state = {ready: false}; 
+        // this.state = {ready: false}; 
+        this.state = {
+            ready: false,
+            canvasLoaded: false,
+        }; 
         // var backEndImageNames;
         
     }
@@ -33,17 +39,17 @@ export default class Map extends React.Component{
         imageRepository.getItems()
             .then((itemsFromApi) => {
                 this.items = itemsFromApi;
-                this.setState ({ready: true}) 
-                console.log("inside foo " , this.items);
+                this.setState ({ready: true})
+                this.setState ({canvasLoaded: true}) 
+                // console.log("inside foo " , this.items);
             });
-            //must use .then
-            // console.log("oustside foo in components " , this.items);
-        
-        // console.log(imageRepository.items);
+        //must use .then
+        // console.log("oustside foo in components " , this.items);
+        // console.log(this.canvasOverlay);
+        this.imageLoader();
+        // this.onLoadDraw();
     }
     
-            
-       
 
     onloadImageLocalStorage(){
 
@@ -58,10 +64,25 @@ export default class Map extends React.Component{
             return locations;
             //drawLocation("initialLoad");
         }
-        //{xValue: 760, yValue: 244, item: 'gpu', url: './images/GPU4.png'}
+        
     }
 
 
+    onLoadDraw(event){
+        // const context = this.canvasOverlay.current.getContext('2d');
+        // console.log("im Drawin Here");
+        console.log(this.canvasOverlay);
+        if(this.canvasOverlay.current === null){
+            console.log('canvas not loaded yet');
+        }
+        else{
+            console.log('canvas loaded');
+            const context = this.canvasOverlay.current.getContext('2d');
+            const image = new Image();
+            image.src = `${this.items[2].url}`;
+            this.populateMapFromLocalStorage(context, image)   
+        }
+    }
     //think about this function as a variable -patr
     //need a memory for items so it doesnt call backend everytime
     
@@ -70,11 +91,39 @@ export default class Map extends React.Component{
         return this.canvasOverlay.current;
     }
 
-    drawImage(event){
-        const image = new Image();
-        image.src = "http://localhost:3000/image/GPU4.png";
-        const context = this.canvasOverlay.current.getContext('2d');
+    imageLoader(){
+        if (this.state.ready){
+        console.log(this.items);
+        }
+        
+        var imageCount = 0;
+        this.items.forEach(src => {
+            const image = new Image();
+            image.src = src;
+            image.onload = () => {
+                imageCount += 1;
+                if(imageCount === this.items.length){
+                    // imagesLoaded();
+                    console.log('images are loaded');
+                    
+                }
+            }
+            this.loadedImagesAvailableForSelection.push(image);
+        });
+        console.log(this.loadedImagesAvailableForSelection);
+    }
 
+
+    drawImage(event){
+        console.log("event"  , this.items);
+        console.log("item url"  , this.items[2].url);
+        const image = new Image();
+        // image.src = "http://localhost:3000/image/GPU4.png";
+        // http://localhost:3000/images/GPU4.png
+        image.src = `${this.items[2].url}`;
+        const context = this.canvasOverlay.current.getContext('2d');
+        
+        
         const rect = this.canvas().getBoundingClientRect()
         var location = {
             xValue: event.clientX - rect.left,
@@ -94,19 +143,19 @@ export default class Map extends React.Component{
         this.locations.push(location);
         console.log("locations log ", this.locations);
         localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
+        this.populateMapFromLocalStorage(context, image)
         
-        // context.drawImage(image, event.clientX - rect.left - 15, event.clientY - rect.top - 13);
+        // context.drawImage(image, event.clientX - rect.left - 15, event.clientY - rect.top - 13);    
+        // for (var j = 0; j < this.locations.length; j++) {
+        //     context.drawImage(image, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
+        // } 
+    }
 
-        // this.locations.forEach(function (item, j) {
-        //     var poop = this.locations[j].xValue 
-        //     console.log(poop);
-        //     // context.drawImage(image, this.locations[j].xValue, this.locations[j].yValue);
-        // }); 
-
+    populateMapFromLocalStorage(context, image){
+        
         for (var j = 0; j < this.locations.length; j++) {
             context.drawImage(image, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
         } 
-        
     }
 
     // makes reset button functional
@@ -140,7 +189,8 @@ export default class Map extends React.Component{
     render() {
         var itemList;
         var map;
-        console.log(this.state.ready);
+        // console.log(this.state.ready);
+        // console.log("inside State Ready", map);
         if (this.state.ready) {
            map = <div className="mapContainer">
                     <img id={"mapOverlay"} src={this.props.mapImage} width={1590} height={834} alt="The map didn't load"/>
@@ -151,11 +201,19 @@ export default class Map extends React.Component{
                         width="1587" 
                         height="831"
                         onClick={this.drawImage.bind(this)} // reference to a function
+                        onLoad={this.onLoadDraw(this)}
+                        // onLoad={this.populateMapFromLocalStorage.bind(this)}
                         >
-                    </canvas>        
+                    </canvas> 
                 </div>
+     
         } 
+        
 
+        if(this.state.canvasLoaded){
+            // console.log("inside canvasLoaded", map);
+            // this.onLoadDraw();
+        }
         return(
             <div className="mainContainer">
                 {map}
