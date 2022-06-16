@@ -90,8 +90,10 @@ export default class Map extends React.Component{
                 const context = this.canvasOverlay.current.getContext('2d');
                 const image = new Image();
                 image.src = `${this.items[2].url}`;
-                this.populateMapFromLocalStorage(context, image)
-                this.imageLoader();
+                this.imageLoader(context);
+                this.populateMapFromLocalStorage(context, image, this.loadedImagesAvailableForSelection)
+                
+                
             }
             
         }
@@ -104,7 +106,7 @@ export default class Map extends React.Component{
         return this.canvasOverlay.current;
     }
 
-    imageLoader(){
+    imageLoader(context){
         console.log(this.items[0].url);
         var imageCount = 0;
 
@@ -115,12 +117,15 @@ export default class Map extends React.Component{
             image.onload = () => {
                 imageCount += 1;
                 if(imageCount === this.items.length){
-                    console.log('images are loaded! Great Job!'); 
+                    console.log('images are loaded! Great Job!');
                 }
             }
             
             this.loadedImagesAvailableForSelection.push(image);
-            console.log("images available for use ", this.loadedImagesAvailableForSelection);
+
+            
+                
+            // console.log("images available for use ", this.loadedImagesAvailableForSelection);
         }
         // this.items.forEach(url => {
         //     const image = new Image();
@@ -141,7 +146,8 @@ export default class Map extends React.Component{
 
 
     drawImage(event){
-        console.log("event"  , this.items);
+        
+        // console.log("event"  , this.items);
         console.log("item url"  , this.loadedImagesAvailableForSelection[this.uniqueItemNumber]);
         const image = new Image();
         // image.src = "http://localhost:3000/image/GPU4.png";
@@ -155,14 +161,14 @@ export default class Map extends React.Component{
         var location = {
             xValue: event.clientX - rect.left,
             yValue: event.clientY - rect.top,
-            item: "gpu",
+            item: this.uniqueItemNumber,
             url: "./images/GPU4.png"  
         };
 
         this.locations.push(location);
-        console.log("locations log ", this.locations);
+        // console.log("locations log ", this.locations);
         localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
-        this.populateMapFromLocalStorage(context, image)
+        this.populateMapFromLocalStorage(context, image, this.loadedImagesAvailableForSelection)
         
         // context.drawImage(image, event.clientX - rect.left - 15, event.clientY - rect.top - 13);    
         // for (var j = 0; j < this.locations.length; j++) {
@@ -170,10 +176,15 @@ export default class Map extends React.Component{
         // } 
     }
 
-    populateMapFromLocalStorage(context, image){
-        
+    populateMapFromLocalStorage(context, image, array){
+        var currentDraw;
+        // console.log("array", array);
+        // console.log("availSelectionIMG", this.loadedImagesAvailableForSelection[0]);
+        // console.log("image",image);
         for (var j = 0; j < this.locations.length; j++) {
-            context.drawImage(image, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
+            console.log(this.loadedImagesAvailableForSelection[this.locations[j].item]);
+            currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
+            context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
         } 
     }
 
