@@ -13,25 +13,23 @@ import { setSelectionRange } from '@testing-library/user-event/dist/utils';
 export default class Map extends React.Component{
     canvasOverlay;
     locations = this.onloadImageLocalStorage();
-    // locations = JSON.parse(localStorage.getItem('customsTextValues'));
     items = [];
     ready = false;
     loadedImagesAvailableForSelection = [];
     uniqueItemNumber = 0;
     executed = false;
-    // imageURLS = ['images/items/GPU4.png', 'images/items/greenBat.png', 'images/items/physicalBitcoin.png', 'images/items/ledx.png', 'images/items/aesa.png', 'images/items/defib.png','images/items/intel.png', 'images/items/mfilter.png', 'images/items/mtube.png', 'images/items/vpx.png'];
 
 
     constructor(props){
         super(props); 
         this.canvasOverlay = React.createRef();
-        // this.state = {ready: false}; 
         this.state = {
             ready: false,
             canvasLoaded: false,
-        }; 
-        // var backEndImageNames;
-        
+            imagesLoaded: false,
+            loadedFromLocalStorage: false,
+            imageSelected: 0,
+        };    
     }
     
 
@@ -41,28 +39,22 @@ export default class Map extends React.Component{
         imageRepository.getItems()
             .then((itemsFromApi) => {
                 this.items = itemsFromApi;
-                this.setState ({ready: true})
-                this.setState ({canvasLoaded: true}) 
-                // console.log("inside foo " , this.items);
+                this.setState ({ready: true}) 
             });
-        //must use .then
-        // console.log("oustside foo in components " , this.items);
-        // console.log(this.canvasOverlay);
-         
-        // this.onLoadDraw();
     }
     
 
     onloadImageLocalStorage(){
-
         if (localStorage.getItem('customsTextValues') == null) {
             console.log('no local storage, create new array');
             var locations = [];
             return locations;
         }
+
         else {
             console.log("loading from local storage")
             locations = JSON.parse(localStorage.getItem('customsTextValues'));
+            // this.setState ({loadedFromLocalStorage: true})
             return locations;
             //drawLocation("initialLoad");
         }
@@ -70,30 +62,33 @@ export default class Map extends React.Component{
     }
 
 
-    onLoadDraw(event){   
-        if(this.canvasOverlay.current === null){
+    onLoadDraw(event){ 
+        
+        
+        if(this.canvasOverlay.current === null && !this.executed){
             console.log('canvas not loaded yet');
-            
-            //sometimes page does not load correctly trying to add logic to reload page.
-            function delay(time) {
-                return new Promise(resolve => setTimeout(resolve, time));
-              }
-              
-            //   delay(1000).then(() => window.location.reload());
-            ;
+            this.componentDidMount() 
+        
+            // function delay(time) {
+            //     return new Promise(resolve => setTimeout(resolve, time));
+            //   }
+            //   if(!this.executed){
+            //     this.componentDidMount()
+            //     console.log("notloaded inside if this.executed");
+            // //   delay(1000).then(() => this.componentDidMount());
+            // //   delay(1000).then(() => window.location.reload());
+            //   }
             
         }
+        
         else{
             if(!this.executed){
                 this.executed = true;
                 console.log('canvas loaded');
                 const context = this.canvasOverlay.current.getContext('2d');
-                const image = new Image();
-                image.src = `${this.items[2].url}`;
                 this.imageLoader(context);
-                this.populateMapFromLocalStorage(context, image, this.loadedImagesAvailableForSelection)
                 
-                
+   
             }
             
         }
@@ -118,29 +113,14 @@ export default class Map extends React.Component{
                 imageCount += 1;
                 if(imageCount === this.items.length){
                     console.log('images are loaded! Great Job!');
+                    this.populateMapFromLocalStorage(context);
+                    this.setState ({canvasLoaded: true})
+                    this.setState ({imagesLoaded: true})
                 }
             }
             
-            this.loadedImagesAvailableForSelection.push(image);
-
-            
-                
-            // console.log("images available for use ", this.loadedImagesAvailableForSelection);
+            this.loadedImagesAvailableForSelection.push(image);           
         }
-        // this.items.forEach(url => {
-        //     const image = new Image();
-        //     image.src = url;
-        //     image.onload = () => {
-        //         imageCount += 1;
-        //         if(imageCount === this.items.length){
-        //             // imagesLoaded();
-        //             console.log('images are loaded');
-                    
-        //         }
-        //     }
-        //     this.loadedImagesAvailableForSelection.push(image);
-        //     console.log("images available for use ", this.loadedImagesAvailableForSelection);
-        // });
           
     }
 
@@ -149,10 +129,8 @@ export default class Map extends React.Component{
         
         // console.log("event"  , this.items);
         console.log("item url"  , this.loadedImagesAvailableForSelection[this.uniqueItemNumber]);
-        const image = new Image();
-        // image.src = "http://localhost:3000/image/GPU4.png";
-        // http://localhost:3000/images/GPU4.png
-        image.src = `${this.items[2].url}`;
+        // const image = new Image(); // this is the line causeing images not to work onload
+        // image.src = `${this.items[2].url}`;
         const context = this.canvasOverlay.current.getContext('2d');
         
         console.log("unique number ", this.uniqueItemNumber);
@@ -168,7 +146,7 @@ export default class Map extends React.Component{
         this.locations.push(location);
         // console.log("locations log ", this.locations);
         localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
-        this.populateMapFromLocalStorage(context, image, this.loadedImagesAvailableForSelection)
+        this.populateMapFromLocalStorage(context);
         
         // context.drawImage(image, event.clientX - rect.left - 15, event.clientY - rect.top - 13);    
         // for (var j = 0; j < this.locations.length; j++) {
@@ -176,13 +154,15 @@ export default class Map extends React.Component{
         // } 
     }
 
-    populateMapFromLocalStorage(context, image, array){
+    populateMapFromLocalStorage(context, array){
         var currentDraw;
-        // console.log("array", array);
-        // console.log("availSelectionIMG", this.loadedImagesAvailableForSelection[0]);
-        // console.log("image",image);
+        console.log("drawing called");
+
         for (var j = 0; j < this.locations.length; j++) {
-            console.log(this.loadedImagesAvailableForSelection[this.locations[j].item]);
+            console.log("local leg ", this.locations.length);
+            console.log("iamges loaded ", this.loadedImagesAvailableForSelection);
+            console.log("currentDraw ", currentDraw);
+            // console.log(this.loadedImagesAvailableForSelection[this.locations[j].item]);
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
         } 
@@ -225,8 +205,10 @@ export default class Map extends React.Component{
     render() {
         var itemList;
         var map;
+        var itemDisplay;
         // console.log(this.state.ready);
         // console.log("inside State Ready", map);
+        
         if (this.state.ready) {
            map = <div className="mapContainer">
                     <img id={"mapOverlay"} src={this.props.mapImage} width={1590} height={834} alt="The map didn't load"/>
@@ -244,6 +226,28 @@ export default class Map extends React.Component{
                 </div>
      
         } 
+
+        if(this.state.canvasLoaded) {
+            console.log('cannylannyloadywoady');
+            itemDisplay = <div id="currentlySelectedSticker">
+            Current Image <br /> <img src={this.items[this.uniqueItemNumber].url} alt="loading error"/>
+            {/* Current Image <br /> <img src={require("http://localhost:3000/image/GPU4.png")} alt="loading error"></img> */}
+            </div>
+
+            // for (let k = 0; k < this.items.length; k++){   
+            //     var listItem = `<li><img src=${this.items[k].url} onClick={() => ${this.imageSet(k)}} alt="loading error"/></li>`
+            //     var fullList = listItem += listItem
+            // }
+            //     itemList = 
+            //         <ul>
+            //         {fullList}
+            //         </ul>
+            
+            // <ul>
+            //     <li><img src={this.items[0].url} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
+            // </ul>
+            
+        }
         
 
         if(this.state.canvasLoaded){
@@ -254,14 +258,12 @@ export default class Map extends React.Component{
             <div className="mainContainer">
                 {map}
                 <div id="sideBar">
-                    <div id="currentlySelectedSticker">
-                        {/* Current Image <br /> <img src={require("./images/GPU4.png")} alt="loading error"/> */}
-                        Current Image <br /> <img src="http://localhost:3000/image/GPU4.png" alt="loading error"/>
-                    </div>
+                    {itemDisplay}
+                    <div>{itemList}</div>
                     <div className="dropdown">
                         <button onClick={() => {this.imageSelectDropdown()}} className="dropbtn">Select Image</button>
                             <div id="imageDropdown" className="dropdown-content">
-                            <div>{itemList}</div>
+                            
                                 <ul>
                                     <li><img src={require("./images/GPU4.png")} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
                                     <li><img src={require("./images/items/greenBat.png")} onClick={() => {this.imageSet('1')}} alt="loading error"/></li>
