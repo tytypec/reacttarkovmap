@@ -35,7 +35,6 @@ export default class Map extends React.Component{
 
     componentDidMount(){
         var imageRepository = new Images();
-        //get items is asycn we dont know when items will get back
         imageRepository.getItems()
             .then((itemsFromApi) => {
                 this.items = itemsFromApi;
@@ -56,7 +55,6 @@ export default class Map extends React.Component{
             locations = JSON.parse(localStorage.getItem('customsTextValues'));
             // this.setState ({loadedFromLocalStorage: true})
             return locations;
-            //drawLocation("initialLoad");
         }
         
     }
@@ -67,20 +65,9 @@ export default class Map extends React.Component{
         
         if(this.canvasOverlay.current === null && !this.executed){
             console.log('canvas not loaded yet');
-            this.componentDidMount() 
-        
-            // function delay(time) {
-            //     return new Promise(resolve => setTimeout(resolve, time));
-            //   }
-            //   if(!this.executed){
-            //     this.componentDidMount()
-            //     console.log("notloaded inside if this.executed");
-            // //   delay(1000).then(() => this.componentDidMount());
-            // //   delay(1000).then(() => window.location.reload());
-            //   }
-            
+            this.componentDidMount();   
         }
-        
+
         else{
             if(!this.executed){
                 this.executed = true;
@@ -93,13 +80,12 @@ export default class Map extends React.Component{
             
         }
     }
-    //think about this function as a variable -patr
-    //need a memory for items so it doesnt call backend everytime
     
 
     canvas(){
         return this.canvasOverlay.current;
     }
+
 
     imageLoader(context){
         console.log(this.items[0].url);
@@ -126,13 +112,8 @@ export default class Map extends React.Component{
 
 
     drawImage(event){
-        
-        // console.log("event"  , this.items);
         console.log("item url"  , this.loadedImagesAvailableForSelection[this.uniqueItemNumber]);
-        // const image = new Image(); // this is the line causeing images not to work onload
-        // image.src = `${this.items[2].url}`;
         const context = this.canvasOverlay.current.getContext('2d');
-        
         console.log("unique number ", this.uniqueItemNumber);
         
         const rect = this.canvas().getBoundingClientRect()
@@ -144,31 +125,23 @@ export default class Map extends React.Component{
         };
 
         this.locations.push(location);
-        // console.log("locations log ", this.locations);
         localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
         this.populateMapFromLocalStorage(context);
-        
-        // context.drawImage(image, event.clientX - rect.left - 15, event.clientY - rect.top - 13);    
-        // for (var j = 0; j < this.locations.length; j++) {
-        //     context.drawImage(image, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
-        // } 
     }
+
 
     populateMapFromLocalStorage(context, array){
         var currentDraw;
         console.log("drawing called");
 
         for (var j = 0; j < this.locations.length; j++) {
-            console.log("local leg ", this.locations.length);
-            console.log("iamges loaded ", this.loadedImagesAvailableForSelection);
-            console.log("currentDraw ", currentDraw);
-            // console.log(this.loadedImagesAvailableForSelection[this.locations[j].item]);
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
         } 
     }
 
-    // makes reset button functional
+
+    
     reset(){
         console.log("reset")
         if (window.confirm('Are you sure you want to reset your map?')) {
@@ -181,20 +154,12 @@ export default class Map extends React.Component{
         }
     }
     
+
     // makes item drown down menu function
     imageSelectDropdown() {
         document.getElementById("imageDropdown").classList.toggle("show");
     }
 
-
-
-
-    // imagesLoaded(){
-    //      console.log("Images loaded",loadedImagesAvailableForSelection)
-    //      drawOnInitialLoad();
-    //      history();
-    //      canvasOverlay.addEventListener("click", drawLocation);
-    // }
 
     imageSet(unique){
         this.uniqueItemNumber = unique;
@@ -218,17 +183,16 @@ export default class Map extends React.Component{
                         style={{color:'blue'}} 
                         width="1587" 
                         height="831"
-                        onClick={this.drawImage.bind(this)} // reference to a function
+                        onClick={this.drawImage.bind(this)}
                         onLoad={this.onLoadDraw(this)}
-                        // onLoad={this.populateMapFromLocalStorage.bind(this)}
                         >
                     </canvas> 
                 </div>
      
         } 
 
+        
         if(this.state.canvasLoaded) {
-            console.log('cannylannyloadywoady');
             itemDisplay = <div id="currentlySelectedSticker">
             Current Image <br /> <img src={this.items[this.uniqueItemNumber].url} alt="loading error"/>
             {/* Current Image <br /> <img src={require("http://localhost:3000/image/GPU4.png")} alt="loading error"></img> */}
