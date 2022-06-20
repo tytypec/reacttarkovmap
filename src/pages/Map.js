@@ -107,7 +107,8 @@ export default class Map extends React.Component{
             
             this.loadedImagesAvailableForSelection.push(image);           
         }
-          
+        
+        console.log(this.loadedImagesAvailableForSelection);
     }
 
 
@@ -163,14 +164,16 @@ export default class Map extends React.Component{
 
     imageSet(unique){
         this.uniqueItemNumber = unique;
-        console.log(this.uniqueItemNumber);
+        console.log("unique number",this.uniqueItemNumber);
+        this.setState({imageSelected: unique})
+        console.log("set state", this.state.imageSelected);
     }
 
 
     render() {
-        var itemList;
         var map;
         var itemDisplay;
+        var listDisplay;
         // console.log(this.state.ready);
         // console.log("inside State Ready", map);
         
@@ -194,10 +197,25 @@ export default class Map extends React.Component{
         
         if(this.state.canvasLoaded) {
             itemDisplay = <div id="currentlySelectedSticker">
-            Current Image <br /> <img src={this.items[this.uniqueItemNumber].url} alt="loading error"/>
+            Current Image <br /> <img src={this.items[this.state.imageSelected].url} alt="loading error"/>
+            {/* Current Image <br /> <img src={this.items[this.uniqueItemNumber].url} alt="loading error"/> */}
             {/* Current Image <br /> <img src={require("http://localhost:3000/image/GPU4.png")} alt="loading error"></img> */}
             </div>
-
+        
+            listDisplay = 
+            <ul>
+                <li><img src={this.items[0].url} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
+                <li><img src={this.items[1].url} onClick={() => {this.imageSet('1')}} alt="loading error"/></li>
+                <li><img src={this.items[2].url} onClick={() => {this.imageSet('2')}} alt="loading error"/></li>
+                <li><img src={this.items[3].url} onClick={() => {this.imageSet('3')}} alt="loading error"/></li>
+                <li><img src={this.items[4].url} onClick={() => {this.imageSet('4')}} alt="loading error"/></li>
+                <li><img src={this.items[5].url} onClick={() => {this.imageSet('5')}} alt="loading error"/></li>
+                <li><img src={this.items[6].url} onClick={() => {this.imageSet('6')}} alt="loading error"/></li>
+                <li><img src={this.items[7].url} onClick={() => {this.imageSet('7')}} alt="loading error"/></li>
+                <li><img src={this.items[8].url} onClick={() => {this.imageSet('8')}} alt="loading error"/></li>
+                <li><img src={this.items[9].url} onClick={() => {this.imageSet('9')}} alt="loading error"/></li>
+            </ul>
+        }
             // for (let k = 0; k < this.items.length; k++){   
             //     var listItem = `<li><img src=${this.items[k].url} onClick={() => ${this.imageSet(k)}} alt="loading error"/></li>`
             //     var fullList = listItem += listItem
@@ -210,8 +228,7 @@ export default class Map extends React.Component{
             // <ul>
             //     <li><img src={this.items[0].url} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
             // </ul>
-            
-        }
+        
         
 
         if(this.state.canvasLoaded){
@@ -223,23 +240,10 @@ export default class Map extends React.Component{
                 {map}
                 <div id="sideBar">
                     {itemDisplay}
-                    <div>{itemList}</div>
                     <div className="dropdown">
                         <button onClick={() => {this.imageSelectDropdown()}} className="dropbtn">Select Image</button>
                             <div id="imageDropdown" className="dropdown-content">
-                            
-                                <ul>
-                                    <li><img src={require("./images/GPU4.png")} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/greenBat.png")} onClick={() => {this.imageSet('1')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/physicalBitcoin.png")} onClick={() => {this.imageSet('2')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/ledx.png")} onClick={() => {this.imageSet('3')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/aesa.png")} onClick={() => {this.imageSet('4')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/defib.png")} onClick={() => {this.imageSet('5')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/intel.png")} onClick={() => {this.imageSet('6')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/mfilter.png")} onClick={() => {this.imageSet('7')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/mtube.png")} onClick={() => {this.imageSet('8')}} alt="loading error"/></li>
-                                    <li><img src={require("./images/items/vpx.png")} onClick={() => {this.imageSet('9')}} alt="loading error"/></li>
-                                </ul>
+                                {listDisplay}
                             </div>
                     </div>
                     <div className="sideBarTitle">History</div>
