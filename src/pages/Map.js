@@ -16,8 +16,10 @@ export default class Map extends React.Component{
     items = [];
     ready = false;
     loadedImagesAvailableForSelection = [];
-    uniqueItemNumber = 0;
+    uniqueItemNumber = 2;
     executed = false;
+    history;
+    foo;
 
 
     constructor(props){
@@ -28,7 +30,8 @@ export default class Map extends React.Component{
             canvasLoaded: false,
             imagesLoaded: false,
             loadedFromLocalStorage: false,
-            imageSelected: 0,
+            imageSelected: 2,
+            historyLength: 0,
         };    
     }
     
@@ -122,7 +125,7 @@ export default class Map extends React.Component{
             xValue: event.clientX - rect.left,
             yValue: event.clientY - rect.top,
             item: this.uniqueItemNumber,
-            url: "./images/GPU4.png"  
+            url: this.items[this.uniqueItemNumber].url,  
         };
 
         this.locations.push(location);
@@ -133,14 +136,66 @@ export default class Map extends React.Component{
 
     populateMapFromLocalStorage(context, array){
         var currentDraw;
+        var currentDrawForHTML;
         console.log("drawing called");
 
         for (var j = 0; j < this.locations.length; j++) {
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
-        } 
+            console.log(currentDraw);
+
+            // currentDrawForHTML = currentDraw.toString();  //.replace('<>','')
+            
+            var alteringString = this.locations[j].url
+            var alteringString1 = alteringString.replace("./images" , "");
+            var alteringString2 = "http://localhost:3000/image" + alteringString1
+            console.log("for html ", alteringString2);
+            // {http://localhost:3000/image/" /GPU4.png"} alt="loading error"/>
+            currentDrawForHTML = <img src={alteringString2} alt="loading error"/>;
+            // currentDrawForHTML = `<img src="http://localhost:3000/image${foo1}" alt="loading error">`
+            // currentDrawForHTML = `<img src={"${this.locations[j].url}"} alt="loading error"/>`
+            
+            this.foo =
+            <tr>
+            <td>{j}</td>
+            <td>{currentDrawForHTML}</td>
+            <td>{<img src={require("./images/items/redX.png")} alt="loading error"/>}</td>
+            </tr> 
+              
+        }
+        
+        console.log(this.foo);
+        // this.foo = 
+        // <tr>
+        //  <td>{j}</td>
+        //  <td>{j}</td>
+        //  <td>{j}</td>
+        //  </tr>
+         
     }
 
+    // populateHistory(j){
+    //     // var currentImg = currentDraw
+    //     if(j !== undefined){
+    //     console.log("image currently loaded", j);
+        
+    //     var foo = 
+    //     <tr>
+    //     <td>{j}</td>
+    //     <td>{j}</td>
+    //     <td>{j}</td>
+    //     {/* <td><img src={"http://localhost:3000/image/GPU4.png"} alt="loading error"/></td>
+    //     <td><img src={require("./images/items/redX.png")} alt="loading error"/></td> */}
+    //     </tr>
+
+        
+    //     }
+    //     return foo;
+
+    //     // for (let k = 1; k < this.locations.length + 1; k++){
+
+    //     // }     
+    // }
 
     
     reset(){
@@ -228,8 +283,49 @@ export default class Map extends React.Component{
             // <ul>
             //     <li><img src={this.items[0].url} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
             // </ul>
-        
-        
+        if(this.state.imagesLoaded) { 
+            var populateHistory = this.foo;
+            // console.log("my history", this.populateHistory());  
+            var table;
+
+            table =
+            <tbody>
+            <tr>
+            <td>1</td>
+            <td><img src={this.items[2].url} alt="loading error"/></td>
+            <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
+            </tr>
+            <tr>
+            <td>2</td>
+            <td>Jacob</td>
+            <td>@fat</td>
+            </tr>
+            <tr>
+            <td>3</td>
+            <td>joe</td>
+            <td>5</td>
+            </tr>
+            </tbody>
+
+            console.log("state ",this.state.historyLength);
+            console.log("items ", this.locations.length);
+            // for (let k = 1; k < this.locations.length + 1; k++){
+            //     this.setState({ historyLength: this.state.historyLength + 1 })
+            //     if(this.state.historyLength !== this.locations.length){
+                    
+            //         console.log("img",imgPlaceHolder);
+            //         var foo = 
+            //         <tr>
+            //         <td>{k}</td>
+            //         <td><img src={imgPlaceHolder} alt="loading error"/></td>
+            //         <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
+            //         </tr>
+
+            //     }
+                // console.log('hi');
+                
+            // }
+        }
 
         if(this.state.canvasLoaded){
             // console.log("inside canvasLoaded", map);
@@ -248,11 +344,18 @@ export default class Map extends React.Component{
                     </div>
                     <div className="sideBarTitle">History</div>
                     <div id="locationsTable">
-                        {/* <table> 
-                            <tr>
-                                <th>Loot</th>
-                            </tr>
-                        </table> */}
+                    <table>
+                    <thead>
+                        <tr>
+                        <th>#</th>
+                        <th>IMG</th>
+                        <th>DEL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {populateHistory}
+                    </tbody>
+                    </table>
                     </div>
                         <button onClick={() => {this.reset()}}>Reset</button>
                     </div>                
