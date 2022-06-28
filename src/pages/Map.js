@@ -140,27 +140,27 @@ export default class Map extends React.Component{
         console.log("drawing called");
 
         for (var j = 0; j < this.locations.length; j++) {
+            var tempFoo;
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
             console.log(currentDraw);
 
             // currentDrawForHTML = currentDraw.toString();  //.replace('<>','')
-            
-            var alteringString = this.locations[j].url
-            var alteringString1 = alteringString.replace("./images" , "");
-            var alteringString2 = "http://localhost:3000/image" + alteringString1
-            console.log("for html ", alteringString2);
             // {http://localhost:3000/image/" /GPU4.png"} alt="loading error"/>
-            currentDrawForHTML = <img src={alteringString2} alt="loading error"/>;
+            currentDrawForHTML = <img src={this.locations[j].url} alt="loading error"/>;
             // currentDrawForHTML = `<img src="http://localhost:3000/image${foo1}" alt="loading error">`
             // currentDrawForHTML = `<img src={"${this.locations[j].url}"} alt="loading error"/>`
-            
-            this.foo =
+            console.log(currentDrawForHTML);
+
+            tempFoo = 
             <tr>
             <td>{j}</td>
             <td>{currentDrawForHTML}</td>
             <td>{<img src={require("./images/items/redX.png")} alt="loading error"/>}</td>
             </tr> 
+
+
+            this.foo = tempFoo;
               
         }
         
