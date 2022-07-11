@@ -131,40 +131,42 @@ export default class Map extends React.Component{
         this.locations.push(location);
         localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
         this.populateMapFromLocalStorage(context);
+        this.forceUpdate();
     }
 
 
     populateMapFromLocalStorage(context, array){
         var currentDraw;
         var currentDrawForHTML;
+        var tempFoo;
         console.log("drawing called");
 
         for (var j = 0; j < this.locations.length; j++) {
-            var tempFoo;
+            
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
             console.log(currentDraw);
 
             // currentDrawForHTML = currentDraw.toString();  //.replace('<>','')
             // {http://localhost:3000/image/" /GPU4.png"} alt="loading error"/>
-            currentDrawForHTML = <img src={this.locations[j].url} alt="loading error"/>;
+            currentDrawForHTML = <img src={this.locations[j].url}alt="loading error"/>;
             // currentDrawForHTML = `<img src="http://localhost:3000/image${foo1}" alt="loading error">`
             // currentDrawForHTML = `<img src={"${this.locations[j].url}"} alt="loading error"/>`
             console.log(currentDrawForHTML);
 
-            tempFoo = 
+            tempFoo =
             <tr>
             <td>{j}</td>
             <td>{currentDrawForHTML}</td>
-            <td>{<img src={require("./images/items/redX.png")} alt="loading error"/>}</td>
-            </tr> 
+            <td>{<img src={require("./images/items/redX.png")}alt="loading error"/>}</td>
+            </tr>
 
-
-            this.foo = tempFoo;
-              
+            this.foo = <tbody>{tempFoo}</tbody>
+            
+            console.log(this.foo);
         }
         
-        console.log(this.foo);
+        
         // this.foo = 
         // <tr>
         //  <td>{j}</td>
@@ -347,13 +349,22 @@ export default class Map extends React.Component{
                     <table>
                     <thead>
                         <tr>
-                        <th>#</th>
+                        {/* <th>#</th> */}
                         <th>IMG</th>
                         <th>DEL</th>
                         </tr>
                     </thead>
+                    {/* {populateHistory} */}
                     <tbody>
-                    {populateHistory}
+                    {this.locations.map(item => {
+                    return (
+                        <tr key={item.password}>
+                        {/* <td>{ item.length }</td> */}
+                        <td><img src={item.url}alt="loading error"/></td>
+                        <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
+                        </tr>
+                    );
+                    })}
                     </tbody>
                     </table>
                     </div>
