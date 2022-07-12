@@ -12,6 +12,7 @@ import { setSelectionRange } from '@testing-library/user-event/dist/utils';
 
 export default class Map extends React.Component{
     canvasOverlay;
+    highlightCanvas;
     locations = this.onloadImageLocalStorage();
     items = [];
     ready = false;
@@ -25,6 +26,7 @@ export default class Map extends React.Component{
     constructor(props){
         super(props); 
         this.canvasOverlay = React.createRef();
+        this.highlightCanvas = React.createRef();
         this.state = {
             ready: false,
             canvasLoaded: false,
@@ -119,13 +121,14 @@ export default class Map extends React.Component{
         console.log("item url"  , this.loadedImagesAvailableForSelection[this.uniqueItemNumber]);
         const context = this.canvasOverlay.current.getContext('2d');
         console.log("unique number ", this.uniqueItemNumber);
-        
         const rect = this.canvas().getBoundingClientRect()
+
         var location = {
             xValue: event.clientX - rect.left,
             yValue: event.clientY - rect.top,
             item: this.uniqueItemNumber,
-            url: this.items[this.uniqueItemNumber].url,  
+            url: this.items[this.uniqueItemNumber].url,
+            index: this.locations.length,
         };
 
         this.locations.push(location);
@@ -146,58 +149,10 @@ export default class Map extends React.Component{
             currentDraw = this.loadedImagesAvailableForSelection[this.locations[j].item];
             context.drawImage(currentDraw, this.locations[j].xValue - 15, this.locations[j].yValue - 13);
             console.log(currentDraw);
-
-            // currentDrawForHTML = currentDraw.toString();  //.replace('<>','')
-            // {http://localhost:3000/image/" /GPU4.png"} alt="loading error"/>
-            currentDrawForHTML = <img src={this.locations[j].url}alt="loading error"/>;
-            // currentDrawForHTML = `<img src="http://localhost:3000/image${foo1}" alt="loading error">`
-            // currentDrawForHTML = `<img src={"${this.locations[j].url}"} alt="loading error"/>`
-            console.log(currentDrawForHTML);
-
-            tempFoo =
-            <tr>
-            <td>{j}</td>
-            <td>{currentDrawForHTML}</td>
-            <td>{<img src={require("./images/items/redX.png")}alt="loading error"/>}</td>
-            </tr>
-
-            this.foo = <tbody>{tempFoo}</tbody>
-            
-            console.log(this.foo);
         }
-        
-        
-        // this.foo = 
-        // <tr>
-        //  <td>{j}</td>
-        //  <td>{j}</td>
-        //  <td>{j}</td>
-        //  </tr>
          
     }
 
-    // populateHistory(j){
-    //     // var currentImg = currentDraw
-    //     if(j !== undefined){
-    //     console.log("image currently loaded", j);
-        
-    //     var foo = 
-    //     <tr>
-    //     <td>{j}</td>
-    //     <td>{j}</td>
-    //     <td>{j}</td>
-    //     {/* <td><img src={"http://localhost:3000/image/GPU4.png"} alt="loading error"/></td>
-    //     <td><img src={require("./images/items/redX.png")} alt="loading error"/></td> */}
-    //     </tr>
-
-        
-    //     }
-    //     return foo;
-
-    //     // for (let k = 1; k < this.locations.length + 1; k++){
-
-    //     // }     
-    // }
 
     
     reset(){
@@ -226,6 +181,22 @@ export default class Map extends React.Component{
         console.log("set state", this.state.imageSelected);
     }
 
+    highlightImage(index){
+        console.log("youve hovered over" , index);
+        var context = this.highlightCanvas.current.getContext('2d');
+        context.arc(this.locations[index].xValue + 1.5, this.locations[index].yValue + 2 ,21 , 0, 2 * Math.PI);
+        context.fillStyle = 'rgba(250, 250, 250, 0.2)';
+        context.fill();
+    }
+
+    clearHighlight(){
+        var context = this.highlightCanvas.current.getContext('2d');
+        context.clearRect(0, 0, 1587, 831);
+        context.beginPath();
+        // drawOnInitialLoad();
+    }
+
+
 
     render() {
         var map;
@@ -237,6 +208,14 @@ export default class Map extends React.Component{
         if (this.state.ready) {
            map = <div className="mapContainer">
                     <img id={"mapOverlay"} src={this.props.mapImage} width={1590} height={834} alt="The map didn't load"/>
+                    <canvas 
+                        id="highlightCanvas"
+                        ref={this.highlightCanvas} 
+                        style={{color:'blue'}} 
+                        width="1587" 
+                        height="831"
+                        >
+                    </canvas> 
                     <canvas 
                         id="canvasOverlay"
                         ref={this.canvasOverlay} 
@@ -273,66 +252,15 @@ export default class Map extends React.Component{
                 <li><img src={this.items[9].url} onClick={() => {this.imageSet('9')}} alt="loading error"/></li>
             </ul>
         }
-            // for (let k = 0; k < this.items.length; k++){   
-            //     var listItem = `<li><img src=${this.items[k].url} onClick={() => ${this.imageSet(k)}} alt="loading error"/></li>`
-            //     var fullList = listItem += listItem
-            // }
-            //     itemList = 
-            //         <ul>
-            //         {fullList}
-            //         </ul>
-            
-            // <ul>
-            //     <li><img src={this.items[0].url} onClick={() => {this.imageSet('0')}} alt="loading error"/></li>
-            // </ul>
-        if(this.state.imagesLoaded) { 
-            var populateHistory = this.foo;
-            // console.log("my history", this.populateHistory());  
-            var table;
 
-            table =
-            <tbody>
-            <tr>
-            <td>1</td>
-            <td><img src={this.items[2].url} alt="loading error"/></td>
-            <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
-            </tr>
-            <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>@fat</td>
-            </tr>
-            <tr>
-            <td>3</td>
-            <td>joe</td>
-            <td>5</td>
-            </tr>
-            </tbody>
-
-            console.log("state ",this.state.historyLength);
-            console.log("items ", this.locations.length);
-            // for (let k = 1; k < this.locations.length + 1; k++){
-            //     this.setState({ historyLength: this.state.historyLength + 1 })
-            //     if(this.state.historyLength !== this.locations.length){
-                    
-            //         console.log("img",imgPlaceHolder);
-            //         var foo = 
-            //         <tr>
-            //         <td>{k}</td>
-            //         <td><img src={imgPlaceHolder} alt="loading error"/></td>
-            //         <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
-            //         </tr>
-
-            //     }
-                // console.log('hi');
-                
-            // }
+        if(this.state.imagesLoaded) {  
         }
 
         if(this.state.canvasLoaded){
             // console.log("inside canvasLoaded", map);
             // this.onLoadDraw();
         }
+
         return(
             <div className="mainContainer">
                 {map}
@@ -349,7 +277,7 @@ export default class Map extends React.Component{
                     <table>
                     <thead>
                         <tr>
-                        {/* <th>#</th> */}
+                        <th>#</th>
                         <th>IMG</th>
                         <th>DEL</th>
                         </tr>
@@ -359,8 +287,10 @@ export default class Map extends React.Component{
                     {this.locations.map(item => {
                     return (
                         <tr key={item.password}>
-                        {/* <td>{ item.length }</td> */}
-                        <td><img src={item.url}alt="loading error"/></td>
+                        <td>{ item.index }</td>
+                        {/* <td><img onMouseOver={this.highlightImage.bind("1")} src={item.url}alt="loading error"/></td> */}
+                        {/* <td><img onMouseEnter={this.highlightImage.bind(this, item.index)} onMouseLeave={this.clearHighlight()} src={item.url}alt="loading error"/></td> */}
+                        <td><img onMouseEnter={() => this.highlightImage(item.index)}  onMouseLeave={() => {this.clearHighlight()}} src={item.url}alt="loading error"/></td>
                         <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
                         </tr>
                     );
