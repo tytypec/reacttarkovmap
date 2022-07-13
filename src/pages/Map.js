@@ -185,7 +185,7 @@ export default class Map extends React.Component{
         console.log("youve hovered over" , index);
         var context = this.highlightCanvas.current.getContext('2d');
         context.arc(this.locations[index].xValue + 1.5, this.locations[index].yValue + 2 ,21 , 0, 2 * Math.PI);
-        context.fillStyle = 'rgba(250, 250, 250, 0.2)';
+        context.fillStyle = 'rgba(250, 250, 250, 0.5)';
         context.fill();
     }
 
@@ -194,6 +194,17 @@ export default class Map extends React.Component{
         context.clearRect(0, 0, 1587, 831);
         context.beginPath();
         // drawOnInitialLoad();
+    }
+
+    deleteCanvasItem(index){
+        const context = this.canvasOverlay.current.getContext('2d');
+        this.locations.splice(index,1);
+        console.log(this.locations);
+        context.clearRect(0, 0, 1587, 831);
+        context.beginPath();
+        localStorage.setItem('customsTextValues', JSON.stringify(this.locations));
+        this.populateMapFromLocalStorage(context);
+        this.forceUpdate();
     }
 
 
@@ -291,7 +302,7 @@ export default class Map extends React.Component{
                         {/* <td><img onMouseOver={this.highlightImage.bind("1")} src={item.url}alt="loading error"/></td> */}
                         {/* <td><img onMouseEnter={this.highlightImage.bind(this, item.index)} onMouseLeave={this.clearHighlight()} src={item.url}alt="loading error"/></td> */}
                         <td><img onMouseEnter={() => this.highlightImage(item.index)}  onMouseLeave={() => {this.clearHighlight()}} src={item.url}alt="loading error"/></td>
-                        <td><img src={require("./images/items/redX.png")} alt="loading error"/></td>
+                        <td><img onClick={() => this.deleteCanvasItem(item.index)} src={require("./images/items/redX.png")} alt="loading error"/></td>
                         </tr>
                     );
                     })}
